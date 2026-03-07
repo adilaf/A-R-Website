@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0e0604" />
+  <title>Adil & Rohma — Wedding Reception</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Great+Vibes&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --crimson: #8B1A1A;
+      --gold: #C8922A;
+      --cream: #F5F0E8;
+      --dark: #2A1810;
+      --light-gold: #E8C97A;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      background: #0e0604;
+      font-family: 'Cormorant Garamond', serif;
+      color: var(--dark);
+      overflow-x: hidden;
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+    body.load-screen-active {
+      overflow: hidden;
+      height: 100vh;
+      height: 100dvh;
+    }
+
+    /* ── PARTICLE BACKGROUND ── */
+    #particles {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    }
+
+    /* ── PRELOADER (video loading screen) ── */
+    .preload-indicator {
+      position: fixed; inset: 0; z-index: 100;
+      background: #0e0604;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      overflow: hidden;
+    }
+    .preload-indicator.gone { opacity: 0; visibility: hidden; pointer-events: none; }
+    .preload-indicator .loading-video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .preload-indicator {
+        height: 100vh;
+        min-height: 100vh;
+      }
+    }
+
+    /* ── REVEAL SECTION ── */
+    .card-area {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Reveal area: flip card only — centred on screen */
+    #reveal-section.card-area--reveal {
+      width: 100%;
+      min-height: 100svh;
+      padding: 32px 16px 110px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* Invitation area: opened card + actions (hidden until "Open" is clicked) */
+    #invitation-area.card-area--invitation {
+      display: none;
+      min-height: 0;
+      padding: 20px 16px 24px;
+      justify-content: flex-start;
+    }
+    #invitation-area.visible {
+      display: flex;
+    }
+
+    .card-scene {
+      position: relative;
+      perspective: 1200px;
+      width: min(390px, 86vw);
+      max-height: calc(100svh - 180px);
+      aspect-ratio: 3/4;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    /* On very short screens, constrain by height instead */
+    @media (max-height: 680px) {
+      .card-scene {
+        width: auto;
+        height: calc(100svh - 180px);
+      }
+      #reveal-section { padding-bottom: 90px; }
+    }
+
+    .card-flipper {
+      width: 100%; height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 1.4s cubic-bezier(0.645, 0.045, 0.355, 1.000);
+    }
+    .card-flipper.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow:
+        0 20px 60px rgba(0,0,0,0.85),
+        0 0 0 1px rgba(200,146,42,0.18);
+    }
+    .card-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .card-back { transform: rotateY(180deg); }
+
+    .card-front::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(105deg, transparent 38%, rgba(255,255,255,0.1) 50%, transparent 62%);
+      background-size: 200% 100%;
+      animation: shimmer 3.5s ease-in-out infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: -100% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .card-glow {
+      position: absolute; inset: -14px;
+      border-radius: 12px;
+      background: radial-gradient(ellipse at 50% 50%, rgba(200,146,42,0.18) 0%, transparent 70%);
+      animation: pulse-glow 2s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    @keyframes pulse-glow {
+      from { opacity: 0.4; transform: scale(0.98); }
+      to   { opacity: 0.9; transform: scale(1.02); }
+    }
+
+    /* ── OPEN BUTTON (sibling of card, same flex centre as card) ── */
+    .open-btn {
+      flex-shrink: 0;
+      margin-top: 24px;
+      background: rgba(139,26,26,0.9);
+      border: 1px solid rgba(200,146,42,0.45);
+      color: var(--light-gold);
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      padding: 0 32px;
+      height: 50px;
+      cursor: pointer;
+      transition: background 0.25s, transform 0.15s;
+      white-space: nowrap;
+      border-radius: 2px;
+      animation: fade-in-up 0.8s ease 2.8s both;
+      touch-action: manipulation;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .open-btn:active { background: rgba(160,32,32,1); transform: scale(0.97); }
+
+    /* ── CARD OPEN VIEW (lives in invitation area, centred) ── */
+    #card-open-view {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: min(480px, 94vw);
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      padding: 0 0 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .invitation-img {
+      width: 100%;
+      border-radius: 4px;
+      box-shadow: 0 28px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(200,146,42,0.22);
+      animation: reveal-card 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
+    }
+    @keyframes reveal-card {
+      from { opacity: 0; transform: scale(0.93) translateY(16px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .action-bar {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 100%;
+      padding: 0 4px;
+      animation: fade-in-up 0.6s ease 0.3s both;
+    }
+    @media (min-width: 380px) {
+      .action-bar { flex-direction: row; justify-content: center; padding: 0; }
+    }
+
+    .btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.7rem;
+      letter-spacing: 0.18em;
+      padding: 0 26px;
+      height: 52px;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+      text-decoration: none;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      touch-action: manipulation;
+      width: 100%;
+    }
+    @media (min-width: 380px) { .btn { width: auto; } }
+
+    .btn-primary {
+      background: var(--crimson);
+      color: var(--light-gold);
+      border: none;
+      box-shadow: 0 4px 20px rgba(139,26,26,0.45);
+    }
+    .btn-primary:active { background: #a02020; transform: scale(0.97); }
+
+    .btn-outline {
+      background: rgba(200,146,42,0.06);
+      color: var(--light-gold);
+      border: 1px solid rgba(200,146,42,0.4);
+    }
+    .btn-outline:active { background: rgba(200,146,42,0.15); transform: scale(0.97); }
+
+    /* ── RSVP SECTION ── */
+    #rsvp {
+      position: relative; z-index: 10;
+      padding: 56px 16px 72px;
+      padding-bottom: calc(72px + env(safe-area-inset-bottom));
+      display: none;
+    }
+    #rsvp.visible { display: block; }
+
+    .rsvp-container {
+      max-width: 720px;
+      margin: 0 auto;
+      animation: fade-in-up 0.7s ease both;
+    }
+
+    .rsvp-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .rsvp-header .ornament {
+      color: var(--gold);
+      font-size: clamp(1rem, 4vw, 1.5rem);
+      letter-spacing: 0.28em;
+      display: block;
+      margin-bottom: 10px;
+      opacity: 0.6;
+    }
+    .rsvp-header h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: clamp(2.8rem, 11vw, 3.6rem);
+      color: var(--light-gold);
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    .rsvp-header p {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(0.55rem, 2.2vw, 0.68rem);
+      letter-spacing: 0.22em;
+      color: rgba(232,201,122,0.5);
+    }
+
+    .divider {
+      display: flex; align-items: center; gap: 12px;
+      margin: 24px 0;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(to right, transparent, rgba(200,146,42,0.32), transparent);
+    }
+    .divider span { color: var(--gold); font-size: 0.85rem; opacity: 0.55; }
+
+    /* ── FORMS.APP EMBED ── */
+    #formsapp-embed {
+      width: 100%;
+      animation: fade-in-up 0.6s ease 0.2s both;
+    }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 10;
+      text-align: center;
+      padding: 26px 16px;
+      padding-bottom: calc(26px + env(safe-area-inset-bottom));
+      border-top: 1px solid rgba(200,146,42,0.1);
+      font-family: 'Cinzel', serif;
+      font-size: 0.56rem;
+      letter-spacing: 0.16em;
+      color: rgba(200,146,42,0.26);
+    }
+
+    @keyframes fade-in-up {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .card-flipper { transition: none; }
+    }
+  </style>
+</head>
+<body class="load-screen-active">
+
+  <div class="preload-indicator" id="preloader">
+    <video class="loading-video" id="loading-video" autoplay muted playsinline>
+      <source src="260123_A+R_logo.mp4" type="video/mp4" />
+    </video>
+  </div>
+
+  <canvas id="particles"></canvas>
+
+  <!-- REVEAL AREA: flip card (cover → invitation) -->
+  <section id="reveal-section" class="card-area card-area--reveal">
+    <div class="card-scene" id="flip-scene">
+      <div class="card-glow"></div>
+      <div class="card-flipper" id="flipper">
+        <div class="card-face card-front">
+          <img src="Img/cover.png" alt="Wedding invitation cover" loading="eager" />
+        </div>
+        <div class="card-face card-back">
+          <img src="Img/invitation.png" alt="Wedding invitation" loading="eager" />
+        </div>
+      </div>
+    </div>
+    <button class="open-btn" id="open-btn" onclick="openCard()">✦ OPEN INVITATION ✦</button>
+  </section>
+
+  <!-- INVITATION AREA: opened card + actions (shown after "Open") -->
+  <section id="invitation-area" class="card-area card-area--invitation">
+    <div id="card-open-view">
+      <img src="Img/invitation.png" class="invitation-img" alt="Adil & Rohma Wedding Invitation" />
+      <div class="action-bar">
+        <a href="Img/invitation.png" download="Adil_Rohma_Wedding_Invitation.png" class="btn btn-primary">
+          ↓ Download Invitation
+        </a>
+        <button class="btn btn-outline" onclick="scrollToRsvp()">✦ RSVP Now</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- RSVP SECTION -->
+  <section id="rsvp">
+    <div class="rsvp-container">
+
+      <div class="rsvp-header">
+        <span class="ornament">✦ ✦ ✦</span>
+        <p>WEDDING RECEPTION · 15 AUGUST 2026</p>
+      </div>
+
+      <div class="divider"><span>◈</span></div>
+
+      <div id="formsapp-embed">
+        <div formsappId="69abaa993837b60002a66a12"></div>
+        <script src="https://forms.app/cdn/embed.js" type="text/javascript" async defer onload="new formsapp('69abaa993837b60002a66a12', 'standard', {'width':'100%','height':'600px','opacity':0.19999999999999996}, 'https://aticd3kx.forms.app');"></script>
+      </div>
+
+    </div>
+  </section>
+
+  <footer>
+    <p>ADIL &amp; ROHMA · 15 AUGUST 2026 · WESTMINSTER, WA</p>
+  </footer>
+
+  <script>
+    // ── PARTICLES ── (particle count reduced on mobile for battery/performance)
+    const canvas = document.getElementById('particles');
+    const ctx = canvas.getContext('2d');
+    const isMobile = window.innerWidth < 768;
+    let particles = [];
+    let bgGrad = null;
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      bgGrad = ctx.createRadialGradient(
+        canvas.width * 0.5, canvas.height * 0.4, 0,
+        canvas.width * 0.5, canvas.height * 0.5,
+        Math.max(canvas.width, canvas.height) * 0.9
+      );
+      bgGrad.addColorStop(0, '#2a1208');
+      bgGrad.addColorStop(1, '#0e0604');
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas, { passive: true });
+
+    const MAX_PARTICLES = isMobile ? 25 : 55;
+    const SPAWN_RATE    = isMobile ? 0.06 : 0.14;
+
+    function spawnParticle() {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: canvas.height + 6,
+        size:  Math.random() * 1.4 + 0.4,
+        speed: Math.random() * 0.45 + 0.18,
+        opacity: 0,
+        maxOp: Math.random() * 0.38 + 0.08,
+        drift: (Math.random() - 0.5) * 0.22,
+      });
+    }
+
+    function drawParticles() {
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      particles = particles.filter(p => p.y > -8);
+      for (const p of particles) {
+        p.y -= p.speed;
+        p.x += p.drift;
+        p.opacity = Math.min(p.opacity + 0.007, p.maxOp);
+        if (p.y < canvas.height * 0.22) p.opacity -= 0.005;
+        const op = Math.max(0, p.opacity);
+        if (op < 0.005) continue;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200,146,42,${op})`;
+        ctx.fill();
+      }
+      if (Math.random() < SPAWN_RATE && particles.length < MAX_PARTICLES) spawnParticle();
+      requestAnimationFrame(drawParticles);
+    }
+    drawParticles();
+
+    // ── PRELOADER (video) + AUTO-FLIP ──
+    const preloader = document.getElementById('preloader');
+    const loadingVideo = document.getElementById('loading-video');
+    const flipper = document.getElementById('flipper');
+    let pageLoaded = false;
+    let videoEnded = false;
+
+    function hidePreloader() {
+      setTimeout(() => {
+        preloader.classList.add('gone');
+        document.body.classList.remove('load-screen-active');
+      }, 500);
+      setTimeout(() => flipper.classList.add('flipped'), 2000);
+    }
+
+    window.addEventListener('load', () => {
+      pageLoaded = true;
+      if (videoEnded) hidePreloader();
+    });
+
+    function onVideoDone() {
+      videoEnded = true;
+      if (pageLoaded) hidePreloader();
+    }
+
+    loadingVideo.addEventListener('ended', () => onVideoDone());
+
+    // On mobile: stop video after 3 seconds and hide preloader
+    if (isMobile) {
+      loadingVideo.addEventListener('timeupdate', function stopAt3() {
+        if (loadingVideo.currentTime >= 3) {
+          loadingVideo.pause();
+          loadingVideo.removeEventListener('timeupdate', stopAt3);
+          onVideoDone();
+        }
+      });
+    }
+
+    // Fallback: if video never ends (e.g. load error), hide after 12s
+    setTimeout(() => {
+      if (!preloader.classList.contains('gone')) {
+        videoEnded = true;
+        if (pageLoaded) hidePreloader();
+      }
+    }, 12000);
+
+    // ── OPEN CARD ──
+    function openCard() {
+      const revealSection = document.getElementById('reveal-section');
+      const flipScene     = document.getElementById('flip-scene');
+      const invitationArea = document.getElementById('invitation-area');
+      const rsvp          = document.getElementById('rsvp');
+
+      flipScene.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+      flipScene.style.opacity    = '0';
+      flipScene.style.transform  = 'scale(0.93) translateY(-14px)';
+
+      setTimeout(() => {
+        revealSection.style.display = 'none';
+        invitationArea.classList.add('visible');
+        rsvp.classList.add('visible');
+        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
+      }, 420);
+    }
+
+    function scrollToRsvp() {
+      document.getElementById('rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>
