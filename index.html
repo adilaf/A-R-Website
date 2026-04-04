@@ -371,12 +371,16 @@
         <a href="Img/invitation.png" download="Adil_Rohma_Wedding_Invitation.png" class="btn btn-primary">
           ↓ Download Invitation
         </a>
+        <!-- Hidden: RSVP button (RSVP / form section disabled) -->
+        <!--
         <button class="btn btn-outline" onclick="scrollToRsvp()">✦ RSVP Now</button>
+        -->
       </div>
     </div>
   </section>
 
-  <!-- RSVP SECTION -->
+  <!-- Hidden: RSVP section + embedded form (uncomment to show again) -->
+  <!--
   <section id="rsvp">
     <div class="rsvp-container">
 
@@ -394,6 +398,7 @@
 
     </div>
   </section>
+  -->
 
   <footer>
     <p>ADIL &amp; ROHMA · 15 AUGUST 2026 · WESTMINSTER, WA</p>
@@ -508,7 +513,8 @@
       const revealSection = document.getElementById('reveal-section');
       const flipScene     = document.getElementById('flip-scene');
       const invitationArea = document.getElementById('invitation-area');
-      const rsvp          = document.getElementById('rsvp');
+      // Hidden: RSVP section commented out in HTML — no #rsvp element
+      // const rsvp = document.getElementById('rsvp');
 
       flipScene.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
       flipScene.style.opacity    = '0';
@@ -517,13 +523,13 @@
       setTimeout(() => {
         revealSection.style.display = 'none';
         invitationArea.classList.add('visible');
-        rsvp.classList.add('visible');
+        // rsvp.classList.add('visible'); // Hidden: RSVP section
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
       }, 420);
     }
 
     function scrollToRsvp() {
-      document.getElementById('rsvp').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
   </script>
 </body>
