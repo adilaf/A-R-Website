@@ -341,7 +341,7 @@
 
   <div class="preload-indicator" id="preloader">
     <video class="loading-video" id="loading-video" autoplay muted playsinline>
-      <source src="260123_A+R_logo.mp4" type="video/mp4" />
+      <source src="260123_A+R_Nikkah-Animation.mp4" type="video/mp4" />
     </video>
   </div>
 
@@ -489,24 +489,13 @@
 
     loadingVideo.addEventListener('ended', () => onVideoDone());
 
-    // On mobile: stop video after 3 seconds and hide preloader
-    if (isMobile) {
-      loadingVideo.addEventListener('timeupdate', function stopAt3() {
-        if (loadingVideo.currentTime >= 3) {
-          loadingVideo.pause();
-          loadingVideo.removeEventListener('timeupdate', stopAt3);
-          onVideoDone();
-        }
-      });
-    }
+    // Nikkah page: allow full animation duration on all devices
 
-    // Fallback: if video never ends (e.g. load error), hide after 12s
-    setTimeout(() => {
-      if (!preloader.classList.contains('gone')) {
-        videoEnded = true;
-        if (pageLoaded) hidePreloader();
-      }
-    }, 12000);
+    // Fallback: only hide early if video fails to load
+    loadingVideo.addEventListener('error', () => {
+      videoEnded = true;
+      if (pageLoaded) hidePreloader();
+    });
 
     // ── OPEN CARD ──
     function openCard() {
