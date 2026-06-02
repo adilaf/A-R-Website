@@ -204,6 +204,43 @@
       box-shadow: 0 28px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(200,146,42,0.22);
       animation: reveal-card 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
     }
+
+    .invitation-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      width: 100%;
+    }
+
+    .invitation-block {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .invitation-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.28em;
+      color: rgba(232,201,122,0.72);
+      text-transform: uppercase;
+    }
+
+    .invitation-block .action-bar {
+      animation: none;
+      padding: 0;
+    }
+    .invitation-block .action-bar .btn {
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .invitation-block:nth-child(2) .invitation-img {
+      animation-delay: 0.12s;
+    }
     @keyframes reveal-card {
       from { opacity: 0; transform: scale(0.93) translateY(16px); }
       to   { opacity: 1; transform: scale(1) translateY(0); }
@@ -363,29 +400,41 @@
     <button class="open-btn" id="open-btn" onclick="openCard()">✦ OPEN INVITATION ✦</button>
   </section>
 
-  <!-- INVITATION AREA: opened card + actions (shown after "Open") -->
+  <!-- INVITATION AREA: nikkah + reception cards + RSVP (shown after "Open") -->
   <section id="invitation-area" class="card-area card-area--invitation">
     <div id="card-open-view">
-      <img src="Img/nikkah.png" class="invitation-img" alt="Adil & Rohma nikkah invitation" />
-      <div class="action-bar">
-        <a href="Img/nikkah.png" download="Adil_Rohma_Nikkah_Invitation.png" class="btn btn-primary">
-          ↓ Download Invitation
-        </a>
-        <!-- Hidden: RSVP button (RSVP / form section disabled) -->
-        <!--
-        <button class="btn btn-outline" onclick="scrollToRsvp()">✦ RSVP Now</button>
-        -->
+      <div class="invitation-stack">
+        <figure class="invitation-block">
+          <figcaption class="invitation-label">Nikkah</figcaption>
+          <img src="Img/nikkah.png" class="invitation-img" alt="Adil & Rohma nikkah invitation" />
+          <div class="action-bar">
+            <a href="Img/nikkah.png" download="Adil_Rohma_Nikkah_Invitation.png" class="btn btn-primary">
+              ↓ Download Nikkah
+            </a>
+          </div>
+        </figure>
+        <figure class="invitation-block">
+          <figcaption class="invitation-label">Reception</figcaption>
+          <img src="Img/reception.png" class="invitation-img" alt="Adil & Rohma wedding reception invitation" />
+          <div class="action-bar">
+            <a href="Img/reception.png" download="Adil_Rohma_Wedding_Reception.png" class="btn btn-primary">
+              ↓ Download Reception
+            </a>
+          </div>
+        </figure>
+      </div>
+      <div class="action-bar" style="margin-top: 8px;">
+        <button type="button" class="btn btn-outline" onclick="scrollToRsvp()">✦ RSVP Now</button>
       </div>
     </div>
   </section>
 
-  <!-- Hidden: RSVP section + embedded form (uncomment to show again) -->
-  <!--
   <section id="rsvp">
     <div class="rsvp-container">
 
       <div class="rsvp-header">
         <span class="ornament">✦ ✦ ✦</span>
+        <h2>RSVP</h2>
         <p>NIKKAH · ADIL &amp; ROHMA</p>
       </div>
 
@@ -398,7 +447,6 @@
 
     </div>
   </section>
-  -->
 
   <footer>
     <p>ADIL &amp; ROHMA · NIKKAH</p>
@@ -502,9 +550,6 @@
       const revealSection = document.getElementById('reveal-section');
       const flipScene     = document.getElementById('flip-scene');
       const invitationArea = document.getElementById('invitation-area');
-      // Hidden: RSVP section commented out in HTML — no #rsvp element
-      // const rsvp = document.getElementById('rsvp');
-
       flipScene.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
       flipScene.style.opacity    = '0';
       flipScene.style.transform  = 'scale(0.93) translateY(-14px)';
@@ -512,7 +557,7 @@
       setTimeout(() => {
         revealSection.style.display = 'none';
         invitationArea.classList.add('visible');
-        // rsvp.classList.add('visible'); // Hidden: RSVP section
+        document.getElementById('rsvp')?.classList.add('visible');
         setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
       }, 420);
     }
