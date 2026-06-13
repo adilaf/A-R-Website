@@ -42,7 +42,7 @@
       position: fixed; inset: 0; pointer-events: none; z-index: 0;
     }
 
-    /* ── PRELOADER (video loading screen) ── */
+    /* ── PRELOADER ── */
     .preload-indicator {
       position: fixed; inset: 0; z-index: 100;
       background: #0e0604;
@@ -52,66 +52,35 @@
     }
     .preload-indicator.gone { opacity: 0; visibility: hidden; pointer-events: none; }
     .preload-indicator .loading-video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center center;
+      width: 100%; height: 100%;
+      object-fit: cover; object-position: center center;
       display: block;
     }
-    @media (max-width: 768px) {
-      .preload-indicator {
-        height: 100vh;
-        min-height: 100vh;
-      }
-    }
 
-    /* ── REVEAL SECTION ── */
+    /* ── MAIN CARD SCENE ── */
     .card-area {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* Reveal area: flip card only — centred on screen */
-    #reveal-section.card-area--reveal {
+      position: relative; z-index: 10;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
       width: 100%;
       min-height: 100svh;
-      padding: 32px 16px 110px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    /* Invitation area: opened card + actions (hidden until "Open" is clicked) */
-    #invitation-area.card-area--invitation {
-      display: none;
-      min-height: 0;
-      padding: 20px 16px 24px;
-      justify-content: flex-start;
-    }
-    #invitation-area.visible {
-      display: flex;
+      padding: 32px 16px 100px;
     }
 
     .card-scene {
       position: relative;
       perspective: 1200px;
       width: min(390px, 86vw);
-      max-height: calc(100svh - 180px);
       aspect-ratio: 3/4;
-      margin-left: auto;
-      margin-right: auto;
+      max-height: calc(100svh - 200px);
     }
 
-    /* On very short screens, constrain by height instead */
     @media (max-height: 680px) {
       .card-scene {
         width: auto;
-        height: calc(100svh - 180px);
+        height: calc(100svh - 200px);
       }
-      #reveal-section { padding-bottom: 90px; }
+      .card-area { padding-bottom: 80px; }
     }
 
     .card-flipper {
@@ -159,89 +128,43 @@
       to   { opacity: 0.9; transform: scale(1.02); }
     }
 
-    /* ── OPEN BUTTON (sibling of card, same flex centre as card) ── */
-    .open-btn {
-      flex-shrink: 0;
-      margin-top: 24px;
-      background: rgba(139,26,26,0.9);
-      border: 1px solid rgba(200,146,42,0.45);
-      color: var(--light-gold);
-      font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
-      letter-spacing: 0.2em;
-      padding: 0 32px;
-      height: 50px;
-      cursor: pointer;
-      transition: background 0.25s, transform 0.15s;
-      white-space: nowrap;
-      border-radius: 2px;
-      animation: fade-in-up 0.8s ease 2.8s both;
-      touch-action: manipulation;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .open-btn:active { background: rgba(160,32,32,1); transform: scale(0.97); }
-
-    /* ── CARD OPEN VIEW (lives in invitation area, centred) ── */
-    #card-open-view {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      width: min(480px, 94vw);
-      max-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      padding: 0 0 24px;
-      position: relative;
-      z-index: 10;
-    }
-
-    .invitation-img {
-      width: 100%;
-      border-radius: 4px;
-      box-shadow: 0 28px 80px rgba(0,0,0,0.85), 0 0 0 1px rgba(200,146,42,0.22);
-      animation: reveal-card 0.8s cubic-bezier(0.23, 1, 0.32, 1) both;
-    }
-    @keyframes reveal-card {
-      from { opacity: 0; transform: scale(0.93) translateY(16px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-
+    /* ── ACTION BUTTONS (beneath card, revealed after flip) ── */
     .action-bar {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      padding: 0 4px;
-      animation: fade-in-up 0.6s ease 0.3s both;
+      flex-direction: row;
+      gap: 12px;
+      margin-top: 28px;
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+      pointer-events: none;
     }
-    @media (min-width: 380px) {
-      .action-bar { flex-direction: row; justify-content: center; padding: 0; }
+    .action-bar.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
     }
 
     .btn {
       font-family: 'Cinzel', serif;
-      font-size: 0.7rem;
+      font-size: 0.68rem;
       letter-spacing: 0.18em;
-      padding: 0 26px;
-      height: 52px;
+      padding: 0 24px;
+      height: 50px;
       border-radius: 2px;
       cursor: pointer;
       transition: background 0.2s, transform 0.15s;
       text-decoration: none;
       display: flex; align-items: center; justify-content: center; gap: 7px;
       touch-action: manipulation;
-      width: 100%;
+      white-space: nowrap;
     }
-    @media (min-width: 380px) { .btn { width: auto; } }
 
     .btn-primary {
       background: var(--crimson);
       color: var(--light-gold);
       border: none;
-      box-shadow: 0 4px 20px rgba(139,26,26,0.45);
+      box-shadow: 0 4px 20px rgba(139,26,26,0.5);
     }
     .btn-primary:active { background: #a02020; transform: scale(0.97); }
 
@@ -252,62 +175,87 @@
     }
     .btn-outline:active { background: rgba(200,146,42,0.15); transform: scale(0.97); }
 
-    /* ── RSVP SECTION ── */
-    #rsvp {
-      position: relative; z-index: 10;
-      padding: 56px 16px 72px;
-      padding-bottom: calc(72px + env(safe-area-inset-bottom));
-      display: none;
+    /* ── RSVP BOTTOM SHEET MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(0,0,0,0);
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      display: flex; align-items: flex-end; justify-content: center;
+      pointer-events: none;
+      transition: background 0.35s ease, backdrop-filter 0.35s ease;
     }
-    #rsvp.visible { display: block; }
-
-    .rsvp-container {
-      max-width: 720px;
-      margin: 0 auto;
-      animation: fade-in-up 0.7s ease both;
-    }
-
-    .rsvp-header {
-      text-align: center;
-      margin-bottom: 36px;
-    }
-    .rsvp-header .ornament {
-      color: var(--gold);
-      font-size: clamp(1rem, 4vw, 1.5rem);
-      letter-spacing: 0.28em;
-      display: block;
-      margin-bottom: 10px;
-      opacity: 0.6;
-    }
-    .rsvp-header h2 {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2.8rem, 11vw, 3.6rem);
-      color: var(--light-gold);
-      font-weight: 400;
-      line-height: 1;
-      margin-bottom: 10px;
-    }
-    .rsvp-header p {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(0.55rem, 2.2vw, 0.68rem);
-      letter-spacing: 0.22em;
-      color: rgba(232,201,122,0.5);
+    .modal-backdrop.open {
+      background: rgba(0,0,0,0.72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      pointer-events: auto;
     }
 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      margin: 24px 0;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px;
-      background: linear-gradient(to right, transparent, rgba(200,146,42,0.32), transparent);
-    }
-    .divider span { color: var(--gold); font-size: 0.85rem; opacity: 0.55; }
-
-    /* ── FORMS.APP EMBED ── */
-    #formsapp-embed {
+    .modal-sheet {
       width: 100%;
-      animation: fade-in-up 0.6s ease 0.2s both;
+      max-width: 640px;
+      background: #180d08;
+      border-top: 1px solid rgba(200,146,42,0.28);
+      border-radius: 18px 18px 0 0;
+      padding: 0 0 env(safe-area-inset-bottom);
+      transform: translateY(100%);
+      transition: transform 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+      max-height: 92svh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .modal-backdrop.open .modal-sheet {
+      transform: translateY(0);
+    }
+
+    .modal-handle-bar {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 14px 20px 10px;
+      gap: 10px;
+      border-bottom: 1px solid rgba(200,146,42,0.1);
+    }
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: rgba(200,146,42,0.3);
+      border-radius: 2px;
+    }
+    .modal-title {
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.24em;
+      color: rgba(232,201,122,0.55);
+    }
+    .modal-close {
+      position: absolute;
+      top: 14px; right: 18px;
+      background: none; border: none;
+      color: rgba(200,146,42,0.45);
+      font-size: 1.4rem;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 8px;
+      touch-action: manipulation;
+      transition: color 0.2s;
+    }
+    .modal-close:active { color: var(--light-gold); }
+
+    .modal-body {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      padding: 0;
+    }
+
+    /* forms.app embed wrapper */
+    #formsapp-embed {
+      min-height: 560px;
+      width: 100%;
     }
 
     /* Footer */
@@ -339,6 +287,7 @@
 </head>
 <body class="load-screen-active">
 
+  <!-- PRELOADER -->
   <div class="preload-indicator" id="preloader">
     <video class="loading-video" id="loading-video" autoplay muted playsinline>
       <source src="260123_A+R_logo.mp4" type="video/mp4" />
@@ -347,8 +296,8 @@
 
   <canvas id="particles"></canvas>
 
-  <!-- REVEAL AREA: flip card (cover → invitation) -->
-  <section id="reveal-section" class="card-area card-area--reveal">
+  <!-- CARD + BUTTONS -->
+  <div class="card-area">
     <div class="card-scene" id="flip-scene">
       <div class="card-glow"></div>
       <div class="card-flipper" id="flipper">
@@ -360,44 +309,40 @@
         </div>
       </div>
     </div>
-    <button class="open-btn" id="open-btn" onclick="openCard()">✦ OPEN INVITATION ✦</button>
-  </section>
 
-  <!-- INVITATION AREA: opened card + actions (shown after "Open") -->
-  <section id="invitation-area" class="card-area card-area--invitation">
-    <div id="card-open-view">
-      <img src="Img/reception.png" class="invitation-img" alt="Adil & Rohma wedding reception" />
-      <div class="action-bar">
-        <a href="Img/reception.png" download="Adil_Rohma_Wedding_Reception.png" class="btn btn-primary">
-          ↓ Download Invitation
-        </a>
-        <button class="btn btn-outline" onclick="scrollToRsvp()">✦ RSVP Now</button>
+    <!-- Revealed after card flips -->
+    <div class="action-bar" id="action-bar">
+      <button class="btn btn-primary" onclick="openRsvp()">✦ RSVP</button>
+      <a href="Img/reception.png" download="Adil_Rohma_Wedding_Reception.png" class="btn btn-outline">↓ Download Invite</a>
+    </div>
+  </div>
+
+  <!-- RSVP BOTTOM SHEET -->
+  <div class="modal-backdrop" id="rsvp-modal" aria-modal="true" role="dialog" aria-label="RSVP Form">
+    <div class="modal-sheet" id="modal-sheet">
+      <div class="modal-handle-bar">
+        <div class="modal-handle"></div>
+        <span class="modal-title">RSVP · 15 AUGUST 2026 · WESTMINSTER, WA</span>
+      </div>
+      <button class="modal-close" onclick="closeRsvp()" aria-label="Close">✕</button>
+      <div class="modal-body">
+        <div id="formsapp-embed">
+          <div formsappId="69abaa993837b60002a66a12"></div>
+          <script src="https://cdn.forms.app/embed.js"
+            type="text/javascript" async defer
+            onload="new formsapp('69abaa993837b60002a66a12', 'standard', {'width':'100%','height':'560px'}, 'https://aticd3kx.forms.app');">
+          </script>
+        </div>
       </div>
     </div>
-  </section>
-
-  <section id="rsvp">
-    <div class="rsvp-container">
-
-      <div class="rsvp-header">
-        <span class="ornament">✦ ✦ ✦</span>
-        <p>WEDDING RECEPTION · 15 AUGUST 2026</p>
-      </div>
-
-      <div class="divider"><span>◈</span></div>
-
-      <div id="formsapp-embed">
-        <div formsappId="6a1ecc309748c553524bc814"></div>
-        <script src="https://cdn.forms.app/embed.js" type="text/javascript" async defer onload="new formsapp('6a1ecc309748c553524bc814', 'standard', {'width':'100vw','height':'600px','opacity':0.19999999999999996}, 'https://aticd3kx.forms.app');"></script>
-       </div>
-  </section>
+  </div>
 
   <footer>
     <p>ADIL &amp; ROHMA · 15 AUGUST 2026 · WESTMINSTER, WA</p>
   </footer>
 
   <script>
-    // ── PARTICLES ── (particle count reduced on mobile for battery/performance)
+    // ── PARTICLES ──
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     const isMobile = window.innerWidth < 768;
@@ -454,10 +399,11 @@
     }
     drawParticles();
 
-    // ── PRELOADER (video) + AUTO-FLIP ──
+    // ── PRELOADER + AUTO-FLIP ──
     const preloader = document.getElementById('preloader');
     const loadingVideo = document.getElementById('loading-video');
     const flipper = document.getElementById('flipper');
+    const actionBar = document.getElementById('action-bar');
     let pageLoaded = false;
     let videoEnded = false;
 
@@ -466,7 +412,14 @@
         preloader.classList.add('gone');
         document.body.classList.remove('load-screen-active');
       }, 500);
-      setTimeout(() => flipper.classList.add('flipped'), 2000);
+      // Flip card
+      setTimeout(() => {
+        flipper.classList.add('flipped');
+      }, 2000);
+      // Reveal buttons after flip completes
+      setTimeout(() => {
+        actionBar.classList.add('visible');
+      }, 3600);
     }
 
     window.addEventListener('load', () => {
@@ -481,7 +434,6 @@
 
     loadingVideo.addEventListener('ended', () => onVideoDone());
 
-    // On mobile: stop video after 3 seconds and hide preloader
     if (isMobile) {
       loadingVideo.addEventListener('timeupdate', function stopAt3() {
         if (loadingVideo.currentTime >= 3) {
@@ -492,7 +444,6 @@
       });
     }
 
-    // Fallback: if video never ends (e.g. load error), hide after 12s
     setTimeout(() => {
       if (!preloader.classList.contains('gone')) {
         videoEnded = true;
@@ -500,28 +451,39 @@
       }
     }, 12000);
 
-    // ── OPEN CARD ──
-    function openCard() {
-      const revealSection = document.getElementById('reveal-section');
-      const flipScene     = document.getElementById('flip-scene');
-      const invitationArea = document.getElementById('invitation-area');
-      const rsvp = document.getElementById('rsvp');
+    // ── RSVP MODAL ──
+    const modal = document.getElementById('rsvp-modal');
+    const sheet = document.getElementById('modal-sheet');
 
-      flipScene.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-      flipScene.style.opacity    = '0';
-      flipScene.style.transform  = 'scale(0.93) translateY(-14px)';
-
-      setTimeout(() => {
-        revealSection.style.display = 'none';
-        invitationArea.classList.add('visible');
-        rsvp?.classList.add('visible');
-        setTimeout(() => window.scrollTo({ top: 0, behavior: 'smooth' }), 50);
-      }, 420);
+    function openRsvp() {
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
 
-    function scrollToRsvp() {
-      document.getElementById('rsvp')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    function closeRsvp() {
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
     }
+
+    // Close on backdrop tap (outside sheet)
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeRsvp();
+    });
+
+    // Swipe down to close
+    let touchStartY = 0;
+    sheet.addEventListener('touchstart', (e) => {
+      touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    sheet.addEventListener('touchend', (e) => {
+      const delta = e.changedTouches[0].clientY - touchStartY;
+      if (delta > 60) closeRsvp();
+    }, { passive: true });
+
+    // Close on Escape
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeRsvp();
+    });
   </script>
 </body>
 </html>
